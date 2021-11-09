@@ -10,11 +10,13 @@ Open the documentation in your browser, e.g. open `docs/main.html`.
 # Group Members
 
 TODO: Remove me, and write the names and UTORids of the group members.
+Steward Esho - eshostew
 
 # Roles and Tasks
 
 TODO: Remove me, and write a *very brief* description of what each team member
 did in the project.
+Steward Esho --> . . . 
 
 ---
 
