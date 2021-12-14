@@ -21,7 +21,7 @@ from test.ast_test import *
 
 # TODO Once you have completed 2 - Symbolic Evaluation
 # uncomment the next line
-# from test.eval_test import *
+from test.eval_test import *
 
 # 3 and 4 can be done independently, for most of it.
 
