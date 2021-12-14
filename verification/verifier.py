@@ -111,8 +111,10 @@ def is_valid(formula: Expression) -> bool:
     z3_converter = AstToZ3()
     z3_formula = z3_converter.convert(formula)
     s=Solver()
-    s.add(z3_formula)
-    return s.check() == sat
+    # To solve for validity instead of satisfiability,
+    # we negate the formula and check if its unsatisfiable
+    s.add(Not(z3_formula))
+    return s.check() == unsat
 
 # if __name__ == "__main__":
 #     x = VarExpr(Variable("x", PaddleType.INT))
