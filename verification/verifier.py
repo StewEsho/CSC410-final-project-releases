@@ -110,7 +110,6 @@ def is_valid(formula: Expression) -> bool:
     """
     z3_converter = AstToZ3()
     z3_formula = z3_converter.convert(formula)
-    print(z3_formula)
     s=Solver()
     s.add(z3_formula)
     return s.check() == sat
