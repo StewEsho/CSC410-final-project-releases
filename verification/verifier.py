@@ -11,7 +11,20 @@ from lang.ast import *
 
 class AstToZ3:
     def __init__(self) -> None:
-        pass
+        self.pythonize_map = {
+            '=': '==',
+            '&&': 'and',
+            '||': 'or',
+            '!': 'not'
+        }
+
+    def pythonize(self, operator: str) -> str:
+        """
+        Convert some operators into python syntax
+        """
+        if operator in self.pythonize_map:
+            return self.pythonize_map[operator]
+        return operator
 
     def convert(self, formula: Expression) -> ExprRef:
         """
@@ -22,22 +35,18 @@ class AstToZ3:
         This allows z3 to attempt to solve the expression,
         and thus verify the expression.
         """
-        print(f'---> {str(formula)}')
-
         result = None
 
         # Case 1 : formula is a binary expression
         if isinstance(formula, BinaryExpr):
-            operator = pythonize(str(formula.operator))
+            operator = self.pythonize(str(formula.operator))
             lhs = self.convert(formula.left_operand)
             rhs = self.convert(formula.right_operand)
-
             op_to_func = {
                 "and": And,
                 "or": Or
             }
 
-            # TODO: check if lhs and rhs are of wrong type
             if operator in op_to_func:
                 result = op_to_func[operator](lhs, rhs)
             else:
@@ -101,6 +110,7 @@ def is_valid(formula: Expression) -> bool:
     """
     z3_converter = AstToZ3()
     z3_formula = z3_converter.convert(formula)
+    print(z3_formula)
     s=Solver()
     s.add(z3_formula)
     return s.check() == sat
