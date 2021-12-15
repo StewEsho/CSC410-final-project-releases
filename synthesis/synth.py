@@ -26,53 +26,82 @@ class HoleData:
         self.pre_step_4_steps: int = 0
 
         self.vars: List[VarExpr] = list()
-        self.int_consts: List[IntConst] = list()
-        self.bool_consts: List[BoolConst] = list()
-        self.consts: List[Union[IntConst, BoolConst]] = list()
+        self.consts: List[Union[int, bool]] = list()
+        self.binary_exprs: List[BinaryExpr] = list()
+        self.unary_exprs: List[UnaryExpr] = list()
+        self.ite_exprs: List[Ite] = list()
         self.rules: Mapping[str, ProductionRule] = list()
         self.grammar_int: bool = False
         self.grammar_var: bool = False
+        self.sub_hole_data: Mapping[str, HoleData]
 
         for rule in hole.grammar.rules:
             self.rules[rule.symbol.name] = (rule)
             for expr in rule.productions:
-                self.add_var(expr)
-                self.add_const(expr)
-                self.set_grammar_flags(expr)
+                self.add_expression(expr)
 
-
-    def add_var(self, vari: Expression) -> bool:
-        if isinstance(vari, VarExpr) and vari not in self.vars:
-            self.vars.append(vari)
-            return True
-        return False
-    
-    def add_const(self, const_expr: Expression) -> bool:
-        target = None
-        if isinstance(const_expr, BoolConst):
-            target = self.bool_consts
-        elif isinstance(const_expr, IntConst):
-            target = self.int_consts
-        else:
-            return False
-        
-        target.append(const_expr)
-        self.consts.append(const_expr)
-        return True
-    
-    def set_grammar_flags(self, expr: Expression) -> None:
-        if isinstance(expr, GrammarInteger):
+    def add_expression(self, expr: Expression) -> bool:
+        if isinstance(expr, BinaryExpr):
+            self.binary_exprs.append(expr)
+        elif isinstance(expr, UnaryExpr):
+            self.unary_exprs.append(expr)
+        elif isinstance(expr, Ite):
+            self.ite_exprs.append(expr)
+        elif isinstance(expr, VarExpr):
+            if expr not in self.vars:
+                self.vars.append(expr)
+                return True
+        elif isinstance(expr, (BoolConst, IntConst)) and expr.value not in self.consts:
+            self.consts.append(expr.value)
+        elif isinstance(expr, GrammarInteger):
             self.grammar_int = True
         elif isinstance(expr, GrammarVar):
             self.grammar_var = True
+        else:
+            return False
+        
+        return True
 
 
-class Method2State:
+class Method2Helper:
     def __init__(self):
         self.history: List[Mapping[str, Expression]] = list() # List of dictionaries, containing the returned mappings in chronological order
         self.num_calls: int = 0 # The number of calls to the method
         self.hole_data: Mapping[str, HoleData] = dict() # Mapping from hole to HoleData
 
+    def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable]) -> Expression:
+        try:
+            data = self.hole_data[hole.var.name]
+        except KeyError as e:
+            print(f"ERROR: Method2Helper.hole_data does not contain data for hole: {hole.var.name}")
+            print(repr(e))
+            return None
+
+        # Step 1) Integers
+        if data.grammar_int:
+            return IntConst(self.num_calls)
+
+        # Step 2) Variables
+        if data.grammar_var and data.var_counter < len(vars_to_use):
+            data.var_counter += 1
+            return vars_to_use[data.var_counter - 1]
+        
+        # Step 3) Constants
+        if data.const_counter < len(data.consts):
+            data.const_counter += 1
+            if type(data.consts[data.const_counter - 1]) is bool:
+                return BoolConst(data.consts[data.const_counter - 1])
+            else: # is int
+                return IntConst(data.consts[data.const_counter - 1])
+
+        # Step 4) Expressions
+        # We want to avoid unary expressions if possible, since uniary operators are their own inverse
+        if len(data.binary_exprs) > 0:
+            # return BinaryExpr()
+
+        # TODO: add in logic for Unary Expression, Binary Expression, ITE expression
+        
+        return None
 
 class Synthesizer():
     """
@@ -121,7 +150,7 @@ class Synthesizer():
         methods to remember which programs have been synthesized before.
         """
         self.method1_state = None
-        self.m2_state = Method2State()
+        self.m2_helper = Method2Helper()
         self.method3_state = None
         # The synthesizer is initialized with the program ast it needs
         # to synthesize hole completions for.
@@ -200,46 +229,18 @@ class Synthesizer():
         >> 3
         . . .
         """
-        if self.m2_state.num_calls == 0:
+        if self.m2_helper.num_calls == 0:
             # Initial setup
             for hole in self.ast.holes:
-                self.m2_state.hole_data[hole.var.name] = HoleData(hole)
+                self.m2_helper.hole_data[hole.var.name] = HoleData(hole)
 
         hole_mappings = dict()
         for hole in self.ast.holes:
-            try:
-                data = self.m2_state.hole_data[hole.var.name]
-            except KeyError as e:
-                print(f"ERROR: Synthesizer.m2_state.hole_data does not contain data for hole: {hole.var.name}")
-                print(repr(e))
-                return None
-
-            # Step 1) Integers
-            if data.grammar_int:
-                hole_mappings[hole.var.name] = IntConst(self.m2_state.num_calls)
-                continue
-
-            # Step 2) Variables
-            if data.grammar_var:
-                vars_to_use = self.ast.hole_can_use(hole.var.name)
-                if data.var_counter < len(vars_to_use):
-                    hole_mappings[hole.var.name] = vars_to_use[data.var_counter]
-                    data.var_counter += 1
-                    continue
-            
-            # Step 3) Constants
-            if data.const_counter < len(data.consts):
-                hole_mappings[hole.var.name] = data.consts[data.const_counter]
-                data.const_counter += 1
-                continue
-
-            # Step 4) Expressions
-            # TODO: add in logic for Unary Expression, BInary Expression, ITE expression
-            hole_mappings[hole.var.name] = None
+            hole_mappings[hole.var.name] = self.m2_helper.hole_to_expression(hole, self.ast.hole_can_use(hole.var.name))
 
 
-        self.m2_state.history.append(hole_mappings)
-        self.m2_state.num_calls += 1
+        self.m2_helper.history.append(hole_mappings)
+        self.m2_helper.num_calls += 1
         return hole_mappings
     
     def synth_method_3(self,) -> Mapping[str, Expression]:
