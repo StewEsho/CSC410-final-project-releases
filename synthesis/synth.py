@@ -94,7 +94,29 @@ class HoleData:
             prod_data = ProductionRuleData(rule)
             self.rules[rule.symbol.name] = prod_data
             if i == 0:        
-                self.top_level_rule = prod_data    
+                self.top_level_rule = prod_data   
+
+
+class Method1Helper:
+    def __init__(self):
+        self.hole_data: Mapping[str, HoleData] = dict() # Mapping from hole to HoleData
+
+    def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData=None) -> Expression:
+
+        # Initialize the return value
+        return_expression: Expression = None
+
+        # Fill in for empty hole data => not a recursive call
+        if data is None:
+            data = self.hole_data[hole.var.name]
+
+        
+
+
+        
+        # Return the expression to be put into hole_mappings[hole.var.name]
+        return return_expression
+
 
 
 class Method2Helper:
@@ -223,6 +245,7 @@ class Synthesizer():
         methods to remember which programs have been synthesized before.
         """
         self.method1_state = None
+        self.m1_helper = Method1Helper()
         self.m2_helper = Method2Helper()
         self.method3_state = None
         # The synthesizer is initialized with the program ast it needs
@@ -239,8 +262,20 @@ class Synthesizer():
 
         **TODO: write a description of your approach in this method.**
         """
-        # TODO : complete this method
-        raise Exception("Synth.Synthesizer.synth_method_1 is not implemented.")
+        # if self.m2_helper.num_calls == 0:
+        #     # Initial setup
+        #     for hole in self.ast.holes:
+        #         self.m2_helper.hole_data[hole.var.name] = HoleData(hole)
+        #         self.m2_helper.holes[hole.var.name] = hole
+
+        hole_mappings = dict()
+        for hole in self.ast.holes:
+            hole_mappings[hole.var.name] = self.m1_helper.hole_to_expression(hole, self.ast.hole_can_use(hole.var.name))
+
+
+        # self.m2_helper.history.append(hole_mappings)
+        # self.m2_helper.num_calls += 1
+        return hole_mappings
 
     def synth_method_2(self,) -> Mapping[str, Expression]:
         """
