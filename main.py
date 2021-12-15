@@ -9,13 +9,12 @@ Open the documentation in your browser, e.g. open `docs/main.html`.
 
 # Group Members
 
-TODO: Remove me, and write the names and UTORids of the group members.
+Eric Babak Jadidzadeh - jadidzad
 Steward Esho - eshostew
 
 # Roles and Tasks
 
-TODO: Remove me, and write a *very brief* description of what each team member
-did in the project.
+Eric Babak Jadidzadeh --> Q2 (Evaluator)
 Steward Esho --> Q3 (Verifier), Q4 (mehtod2) 
 
 ---
