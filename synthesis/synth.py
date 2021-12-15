@@ -1,6 +1,6 @@
 """
 CSC410 Final Project: Enumerative Synthesizer
-by Steward Esho and 
+by Victor Nicolet and Danya Lette
 
 Fill in this file to complete the synthesis portion
 of the assignment.
