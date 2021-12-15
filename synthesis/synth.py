@@ -1,12 +1,11 @@
 """
 CSC410 Final Project: Enumerative Synthesizer
-by Victor Nicolet and Danya Lette
+by Steward Esho and 
 
 Fill in this file to complete the synthesis portion
 of the assignment.
 """
 
-from types import CodeType
 from typing import Mapping, List, Union, Set
 from z3 import *
 from lang.ast import *
@@ -69,9 +68,10 @@ class Method2Helper:
         self.num_calls: int = 0 # The number of calls to the method
         self.hole_data: Mapping[str, HoleData] = dict() # Mapping from hole to HoleData
 
-    def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable]) -> Expression:
+    def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData=None) -> Expression:
         try:
-            data = self.hole_data[hole.var.name]
+            if data is None:
+                data = self.hole_data[hole.var.name]
         except KeyError as e:
             print(f"ERROR: Method2Helper.hole_data does not contain data for hole: {hole.var.name}")
             print(repr(e))
@@ -97,7 +97,16 @@ class Method2Helper:
         # Step 4) Expressions
         # We want to avoid unary expressions if possible, since uniary operators are their own inverse
         if len(data.binary_exprs) > 0:
-            # return BinaryExpr()
+            lhs = self.hole_to_expression(
+                hole, 
+                vars_to_use, 
+                # Reset the progression on the LHS operator with newly generated HoleData
+                HoleData(self.hole_data[data.binary_exprs[0].left_operand.var.name].hole)
+            )
+            operator = data.binary_exprs[0].operator
+            rhs = 
+            
+            return BinaryExpr(operator, lhs, rhs)
 
         # TODO: add in logic for Unary Expression, Binary Expression, ITE expression
         
@@ -233,6 +242,7 @@ class Synthesizer():
             # Initial setup
             for hole in self.ast.holes:
                 self.m2_helper.hole_data[hole.var.name] = HoleData(hole)
+                self.m2_helper.holes[hole.var.name] = hole
 
         hole_mappings = dict()
         for hole in self.ast.holes:

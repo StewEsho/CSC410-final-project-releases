@@ -16,7 +16,7 @@ Steward Esho - eshostew
 
 TODO: Remove me, and write a *very brief* description of what each team member
 did in the project.
-Steward Esho --> Q3 (Verifier) 
+Steward Esho --> Q3 (Verifier), Q4 (mehtod2) 
 
 ---
 
