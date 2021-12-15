@@ -6,40 +6,49 @@ Fill in this file to complete the synthesis portion
 of the assignment.
 """
 
+from os import name
 from typing import Mapping, List, Union, Set
 from z3 import *
 from lang.ast import *
 import itertools
 
-class HoleData:
+class ProductionRuleData:
     """
-    Processes data of HoleDeclaration instance to make it easier for the synthesizer to parse
+    Stores data of a ProductionRule in format that is easier for synthesizer to parse
     """
-
-    def __init__(self, hole: HoleDeclaration) -> None:
-        self.hole: HoleDeclaration = hole
-
-        self.var_counter: int = 0
-        self.const_counter: int = 0
-        # number of steps the method was called before reaching step 4 (method 2 use only)
-        self.pre_step_4_steps: int = 0
-
-        self.vars: List[VarExpr] = list()
-        self.consts: List[Union[int, bool]] = list()
-        self.binary_exprs: List[BinaryExpr] = list()
-        self.unary_exprs: List[UnaryExpr] = list()
-        self.ite_exprs: List[Ite] = list()
-        self.rules: Mapping[str, ProductionRule] = list()
+    def __init__(self, production_rule: ProductionRule) -> None:
+        """
+        Initializes new ProductionRuleData based on data from a given ProductionRule instance
+        """
+        # Redundant reference to the original ProductionRule, just in case its needed in future refactoring
+        self.rule = production_rule
+        # Identifer for the production rule
+        self.symbol = production_rule.symbol
+        # Contains grammar expression "Integer"
         self.grammar_int: bool = False
+        # Contains grammar expression "Variable"
         self.grammar_var: bool = False
-        self.sub_hole_data: Mapping[str, HoleData]
+        # List of all VarExpr expressions
+        self.vars: List[VarExpr] = list()
+        # List of all constant expressions (IntConst or BoolConst)
+        self.consts: List[Union[IntConst, BoolConst]] = list()
+        # List of all BinaryExpression expressions
+        self.binary_exprs: List[BinaryExpr] = list()
+        # List of all UnaryExpresion expressions
+        self.unary_exprs: List[UnaryExpr] = list()
+        # List of all ITE expressions
+        self.ite_exprs: List[Ite] = list()
+        # History of past fillings for this hole.
+        self.history: List[Expression] = list()
 
-        for rule in hole.grammar.rules:
-            self.rules[rule.symbol.name] = (rule)
-            for expr in rule.productions:
-                self.add_expression(expr)
-
+        for expr in production_rule.productions:
+            self.add_expression(expr)
+    
     def add_expression(self, expr: Expression) -> bool:
+        """
+        Analyze what type of Expression expr is, and add it to the class' correct collection.
+        Return True if expression was successfully added to a collection, otherwise return False
+        """
         if isinstance(expr, BinaryExpr):
             self.binary_exprs.append(expr)
         elif isinstance(expr, UnaryExpr):
@@ -50,7 +59,7 @@ class HoleData:
             if expr not in self.vars:
                 self.vars.append(expr)
                 return True
-        elif isinstance(expr, (BoolConst, IntConst)) and expr.value not in self.consts:
+        elif isinstance(expr, (BoolConst, IntConst)):
             self.consts.append(expr.value)
         elif isinstance(expr, GrammarInteger):
             self.grammar_int = True
@@ -62,11 +71,52 @@ class HoleData:
         return True
 
 
+class HoleData:
+    """
+    Processes data of HoleDeclaration instance to make it easier for the synthesizer to parse
+    """
+    def __init__(self, hole: HoleDeclaration) -> None:
+        """
+        Initializes new HoleData based on data from a given HoleDeclaration instance
+        """
+        # Redundant reference to the hole itself
+        self.hole: HoleDeclaration = hole
+        # Mapping from each production rule's name, to a relevant instance of ProductionRuleData
+        self.rules: Mapping[str, ProductionRuleData] = list()
+        # The top-level rule. Hole fillings must match THIS rule
+        self.top_level_rule: ProductionRuleData = None
+        # Counter to track # of variables used so far for the top-level rule
+        self.var_counter = 0
+        # Counter to track # of constants used so far for the top-level rule
+        self.const_counter
+
+        for i, rule in enumerate(hole.grammar.rules):
+            prod_data = ProductionRuleData(rule)
+            self.rules[rule.symbol.name] = prod_data
+            if i == 0:        
+                self.top_level_rule = prod_data    
+
+
 class Method2Helper:
     def __init__(self):
         self.history: List[Mapping[str, Expression]] = list() # List of dictionaries, containing the returned mappings in chronological order
         self.num_calls: int = 0 # The number of calls to the method
         self.hole_data: Mapping[str, HoleData] = dict() # Mapping from hole to HoleData
+
+    def get_fixed_simple_expression_from_hole_data(self, hole_data: HoleData, vars_to_use: List[Variable]) -> Expression:
+        """
+        Return a simple expression from given HoleData instance.
+        This method is *deterministic*, so calling it twice on the same data will return the same result.
+        A simple expression is one of VarExpr, IntConst, or BoolConst 
+        """
+        if hole_data.top_level_rule.grammar_var and len(vars_to_use) > 0:
+            return VarExpr(
+                vars_to_use[hole_data.var_counter - 1], 
+                vars_to_use[hole_data.var_counter - 1].name
+            )
+        elif len(hole_data.top_level_rule.consts) > 0:
+            return hole_data.top_level_rule.consts[0]
+        return None
 
     def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData=None) -> Expression:
         try:
@@ -77,40 +127,54 @@ class Method2Helper:
             print(repr(e))
             return None
 
+        return_expression: Expression = None
         # Step 1) Integers
-        if data.grammar_int:
-            return IntConst(self.num_calls)
+        if data.top_level_rule.grammar_int:
+            return_expression = IntConst(self.num_calls)
 
         # Step 2) Variables
-        if data.grammar_var and data.var_counter < len(vars_to_use):
+        elif data.top_level_rule.grammar_var and data.var_counter < len(vars_to_use):
+            return_expression = VarExpr(vars_to_use[data.var_counter], vars_to_use[data.var_counter].name)
             data.var_counter += 1
-            return vars_to_use[data.var_counter - 1]
         
         # Step 3) Constants
-        if data.const_counter < len(data.consts):
+        elif data.const_counter < len(data.top_level_rule.consts):
+            return_expression = data.top_level_rule.consts[data.const_counter]
             data.const_counter += 1
-            if type(data.consts[data.const_counter - 1]) is bool:
-                return BoolConst(data.consts[data.const_counter - 1])
-            else: # is int
-                return IntConst(data.consts[data.const_counter - 1])
 
         # Step 4) Expressions
         # We want to avoid unary expressions if possible, since uniary operators are their own inverse
-        if len(data.binary_exprs) > 0:
-            lhs = self.hole_to_expression(
-                hole, 
-                vars_to_use, 
-                # Reset the progression on the LHS operator with newly generated HoleData
-                HoleData(self.hole_data[data.binary_exprs[0].left_operand.var.name].hole)
-            )
-            operator = data.binary_exprs[0].operator
-            rhs = 
+        #   meaning if we recursively nest unary expressions, we end up with 
+        #   symbolically unique but semantically identical expressions
+        elif len(data.top_level_rule.binary_exprs) > 0:
+            bin_expr = data.top_level_rule.binary_exprs[0]
+            operator = bin_expr.operator
+
+            if isinstance(bin_expr.left_operand, VarExpr):
+                lhs_hole_data = self.hole_data[bin_expr.left_operand.var.name]
+                # attempt to fix the LHS to a simple value
+                lhs = self.get_fixed_simple_expression_from_hole_data(lhs_hole_data)
+
+            # # fix the LHS to a simple value
+            # if isinstance(bin_expr.left_operand, VarExpr):
+            #     lhs_hole_data = self.hole_data[bin_expr.left_operand.var.name]
+            #     lhs = self.get_fixed_simple_expression_from_hole_data(lhs_hole_data)
+            # else:
+            #     lhs = bin_expr.left_operand
+
+            # # Recursively go thru the right hand side's history
+            # if isinstance(bin_expr.right_operand, VarExpr):
+            #     pass
+            # else:
+            #     rhs 
             
-            return BinaryExpr(operator, lhs, rhs)
+            return_expression = BinaryExpr(operator, lhs, rhs)
 
         # TODO: add in logic for Unary Expression, Binary Expression, ITE expression
         
-        return None
+        data.top_level_rule.history.append(return_expression)
+        return return_expression
+
 
 class Synthesizer():
     """
