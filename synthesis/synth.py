@@ -176,7 +176,27 @@ class Method2Helper:
     Collection of methods and properties to help store state for synth_method_2
     """
     def __init__(self):
-        self.hole_data: Mapping[str, HoleData] = dict()  # Mapping from hole to HoleData
+        # List of dictionaries, containing the returned mappings in chronological order
+        self.history: List[Mapping[str, Expression]] = list()
+        # The number of calls to the method
+        self.num_calls: int = 0
+        # Mapping from hole to HoleData
+        self.hole_data: Mapping[str, HoleData] = dict()
+
+    def get_fixed_simple_expression_from_hole_data(self, hole_data: HoleData, vars_to_use: List[Variable]) -> Expression:
+        """
+        Return a simple expression from given HoleData instance.
+        This method is *deterministic*, so calling it twice on the same data will return the same result.
+        A simple expression is one of VarExpr, IntConst, or BoolConst
+        """
+        if hole_data.top_level_rule.grammar_var and len(vars_to_use) > 0:
+            return VarExpr(
+                vars_to_use[hole_data.var_counter - 1],
+                vars_to_use[hole_data.var_counter - 1].name
+            )
+        elif len(hole_data.top_level_rule.consts) > 0:
+            return hole_data.top_level_rule.consts[0]
+        return None
 
     def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData = None) -> Expression:
         """
@@ -193,6 +213,30 @@ class Method2Helper:
         if len(data.top_level_rule.binary_exprs) > 0:
             bin_expr = data.top_level_rule.binary_exprs[0]
             operator = bin_expr.operator
+
+            if isinstance(bin_expr.left_operand, VarExpr):
+                lhs_hole_data = self.hole_data[bin_expr.left_operand.var.name]
+                # attempt to fix the LHS to a simple value
+                lhs = self.get_fixed_simple_expression_from_hole_data(lhs_hole_data)
+
+            rhs = None  # Incomplete
+            return_expression = BinaryExpr(operator, lhs, rhs)
+
+        # Constants
+        elif data.const_counter < len(data.top_level_rule.consts):
+            return_expression = data.top_level_rule.consts[data.const_counter]
+            data.const_counter += 1
+
+        # Variables
+        elif data.top_level_rule.grammar_var and data.var_counter < len(vars_to_use):
+            return_expression = VarExpr(vars_to_use[data.var_counter], vars_to_use[data.var_counter].name)
+            data.var_counter += 1
+
+        # Integers
+        if data.top_level_rule.grammar_int:
+            return_expression = IntConst(self.num_calls)
+
+        data.top_level_rule.history.append(return_expression)
 
         # Return the expression to be put into hole_mappings[hole.var.name]
         return return_expression
@@ -347,11 +391,21 @@ class Synthesizer():
         Returns a map from each hole id in the program `self.ast`
         to an expression (method 2).
 
-        **TODO: write a description of your approach in this method.**
+        Functions like synth_method_1 but reverses the order of steps for a solution.
+        In other words, it starts with expressions and ends with integers, instead of Integers then Variables first.
         """
+        if self.m1_helper.num_calls == 0:
+            # Initial setup
+            for hole in self.ast.holes:
+                self.m1_helper.hole_data[hole.var.name] = HoleData(hole)
+                self.m1_helper.holes[hole.var.name] = hole
+
         hole_mappings = dict()
         for hole in self.ast.holes:
             hole_mappings[hole.var.name] = self.m2_helper.hole_to_expression(hole, self.ast.hole_can_use(hole.var.name))
+
+        self.m1_helper.history.append(hole_mappings)
+        self.m1_helper.num_calls += 1
 
         return hole_mappings
 
