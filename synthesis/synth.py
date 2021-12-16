@@ -390,9 +390,6 @@ class Synthesizer():
         
         STEP 3) If the popped expression contains 
         """
-        # Due to time constraints, we were unable to complete this method
-        raise NotImplementedError
-   
         if self.m3_helper.num_calls == 0:
             # Initial Setup
             for hole in self.ast.holes:

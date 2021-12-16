@@ -62,7 +62,7 @@ by Victor Nicolet and Danya Lette</p>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hole_map</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">for</span> <span class="n">hole_id</span><span class="p">,</span> <span class="n">hole_completion</span> <span class="ow">in</span> <span class="n">hole_map</span><span class="p">:</span></pre></div>
+    <span class="k">for</span> <span class="n">hole_id</span><span class="p">,</span> <span class="n">hole_completion</span> <span class="ow">in</span> <span class="n">hole_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -209,9 +209,11 @@ any GrammarVar or GrammarInteger</p>
       <p>Call all the methods : 1, 2 and 3</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>                    <span class="n">synth_h1</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">synth_method_1</span><span class="p">()</span>
-                    <span class="n">synth_h2</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">synth_method_2</span><span class="p">()</span>
-                    <span class="n">synth_h3</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">synth_method_3</span><span class="p">()</span></pre></div>
+      <div class="highlight"><pre>                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">synth_h1</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">synth_method_1</span><span class="p">()</span>
+                        <span class="n">synth_h2</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">synth_method_2</span><span class="p">()</span>
+                        <span class="n">synth_h3</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">synth_method_3</span><span class="p">()</span>
+                    <span class="k">except</span><span class="p">:</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -219,6 +221,18 @@ any GrammarVar or GrammarInteger</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>There might be no next program. In that case, just continue.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>                        <span class="k">continue</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
       </div>
       <p>The map returned should be different from the previous one.</p>
     </div>
@@ -228,10 +242,10 @@ any GrammarVar or GrammarInteger</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-14'>
+  <div class='section' id='section-15'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-14'>#</a>
+        <a class='octothorpe' href='#section-15'>#</a>
       </div>
       <p>Check that all the maps are well-formed, according to the checkwf function.</p>
     </div>
@@ -245,10 +259,10 @@ any GrammarVar or GrammarInteger</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-15'>
+  <div class='section' id='section-16'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-15'>#</a>
+        <a class='octothorpe' href='#section-16'>#</a>
       </div>
       <p>Update the prev variables.</p>
     </div>
