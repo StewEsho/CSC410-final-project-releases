@@ -82,13 +82,13 @@ class HoleData:
         # Redundant reference to the hole itself
         self.hole: HoleDeclaration = hole
         # Mapping from each production rule's name, to a relevant instance of ProductionRuleData
-        self.rules: Mapping[str, ProductionRuleData] = list()
+        self.rules: Mapping[str, ProductionRuleData] = dict()
         # The top-level rule. Hole fillings must match THIS rule
         self.top_level_rule: ProductionRuleData = None
         # Counter to track # of variables used so far for the top-level rule
         self.var_counter = 0
         # Counter to track # of constants used so far for the top-level rule
-        self.const_counter
+        self.const_counter = 0
 
         for i, rule in enumerate(hole.grammar.rules):
             prod_data = ProductionRuleData(rule)
@@ -376,7 +376,6 @@ class Synthesizer():
             # Initial setup
             for hole in self.ast.holes:
                 self.m1_helper.hole_data[hole.var.name] = HoleData(hole)
-                self.m1_helper.holes[hole.var.name] = hole
 
         hole_mappings = dict()
         for hole in self.ast.holes:
