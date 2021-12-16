@@ -30,7 +30,7 @@ class AstToZ3:
 
     def convert(self, formula: Expression) -> Union[ExprRef, bool, int]:
         """
-        Converts the format of an AST expression 
+        Converts the format of an AST expression
         from lang.ast.Expression
         to z3.ExprRef.
 
@@ -62,7 +62,7 @@ class AstToZ3:
                 result = Not(operand)
             elif formula.operator == UnaryOperator.ABS:
                 result = If(operand < 0, -operand, operand)
-            elif formula.operator == UnaryOperator.NEG: 
+            elif formula.operator == UnaryOperator.NEG:
                 result = -operand
             else:
                 result = None
@@ -101,7 +101,7 @@ class AstToZ3:
                 "Argument is an Expression of unknown type!\n\
                     Maybe you forgot to implement a case in \
                         verifier.expression_to_z3")
-        
+
         return result
 
 
