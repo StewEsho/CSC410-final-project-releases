@@ -44,7 +44,7 @@ class ProductionRuleData:
 
         for expr in production_rule.productions:
             self.add_expression(expr)
-    
+
     def add_expression(self, expr: Expression) -> bool:
         """
         Analyze what type of Expression expr is, and add it to the class' correct collection.
@@ -68,7 +68,6 @@ class ProductionRuleData:
             self.grammar_var = True
         else:
             return False
-        
         return True
 
 
@@ -94,8 +93,8 @@ class HoleData:
         for i, rule in enumerate(hole.grammar.rules):
             prod_data = ProductionRuleData(rule)
             self.rules[rule.symbol.name] = prod_data
-            if i == 0:        
-                self.top_level_rule = prod_data   
+            if i == 0:
+                self.top_level_rule = prod_data
 
 
 class Method1Helper:
@@ -118,7 +117,7 @@ class Method1Helper:
         if len(data.top_level_rule.binary_exprs) > 0:
             bin_expr = data.top_level_rule.binary_exprs[0]
             operator = bin_expr.operator
-        
+
         # Return the expression to be put into hole_mappings[hole.var.name]
         return return_expression
 
@@ -139,11 +138,11 @@ class Method2Helper:
         """
         Return a simple expression from given HoleData instance.
         This method is *deterministic*, so calling it twice on the same data will return the same result.
-        A simple expression is one of VarExpr, IntConst, or BoolConst 
+        A simple expression is one of VarExpr, IntConst, or BoolConst
         """
         if hole_data.top_level_rule.grammar_var and len(vars_to_use) > 0:
             return VarExpr(
-                vars_to_use[hole_data.var_counter - 1], 
+                vars_to_use[hole_data.var_counter - 1],
                 vars_to_use[hole_data.var_counter - 1].name
             )
         elif len(hole_data.top_level_rule.consts) > 0:
@@ -168,7 +167,7 @@ class Method2Helper:
         elif data.top_level_rule.grammar_var and data.var_counter < len(vars_to_use):
             return_expression = VarExpr(vars_to_use[data.var_counter], vars_to_use[data.var_counter].name)
             data.var_counter += 1
-        
+
         # Step 3) Constants
         elif data.const_counter < len(data.top_level_rule.consts):
             return_expression = data.top_level_rule.consts[data.const_counter]
@@ -176,7 +175,7 @@ class Method2Helper:
 
         # Step 4) Expressions
         # We want to avoid unary expressions if possible, since uniary operators are their own inverse
-        #   meaning if we recursively nest unary expressions, we end up with 
+        #   meaning if we recursively nest unary expressions, we end up with
         #   symbolically unique but semantically identical expressions
         elif len(data.top_level_rule.binary_exprs) > 0:
             bin_expr = data.top_level_rule.binary_exprs[0]
@@ -187,19 +186,7 @@ class Method2Helper:
                 # attempt to fix the LHS to a simple value
                 lhs = self.get_fixed_simple_expression_from_hole_data(lhs_hole_data)
 
-            # # fix the LHS to a simple value
-            # if isinstance(bin_expr.left_operand, VarExpr):
-            #     lhs_hole_data = self.hole_data[bin_expr.left_operand.var.name]
-            #     lhs = self.get_fixed_simple_expression_from_hole_data(lhs_hole_data)
-            # else:
-            #     lhs = bin_expr.left_operand
-
-            # # Recursively go thru the right hand side's history
-            # if isinstance(bin_expr.right_operand, VarExpr):
-            #     pass
-            # else:
-            #     rhs 
-            
+            rhs = None  # Incomplete
             return_expression = BinaryExpr(operator, lhs, rhs)
 
         data.top_level_rule.history.append(return_expression)
@@ -219,7 +206,7 @@ class Method3Helper:
         self.num_calls: int = 0
         # Stores HoleData for each hole
         self.hole_data: Mapping[str, HoleData] = dict()
-        
+
 
 class Synthesizer():
     """
@@ -305,8 +292,8 @@ class Synthesizer():
         This is an Raw-Value Priority enumeration method.
         The goal is to try to fill the hole with computationally easy fillings first,
         and only fill it with complex expressions as a last resort.
-        
-        For each hole, go thru each of the following steps. 
+
+        For each hole, go thru each of the following steps.
         At each step, we check if any rule in the hole satisfies the current step.
         If so, return that as the assignment.
         Otherwise, go to the next step
@@ -321,10 +308,10 @@ class Synthesizer():
             |-> Once all constants are exhausted, go to Step 4
         Step 4) Expressions
             |-> As a last resort, the hole will have to return an expression.
-            |-> To do this, recursively use synth_method_2 to fill each hole in the expression grammar, 
+            |-> To do this, recursively use synth_method_2 to fill each hole in the expression grammar,
             |   then return the final grammar.
             |-> Use the following steps to fill in the hole:
-            |   |-> Step 4.a) Add  
+            |   |-> Step 4.a) ** INCOMPLETE **
         Step 5) None
             |-> If there are no more unique possibilities, then return None
         ===== EXAMPLE =====
@@ -370,7 +357,7 @@ class Synthesizer():
         self.m2_helper.history.append(hole_mappings)
         self.m2_helper.num_calls += 1
         return hole_mappings
-    
+
     def synth_method_3(self,) -> Mapping[str, Expression]:
         """
         Returns a map from each hole id in the program `self.ast`
@@ -385,8 +372,8 @@ class Synthesizer():
 
         STEP 1) If the queue is empty, return None
 
-        STEP 2) Pop an expression from the queue. 
-        If the expression is a Const or Var, and it has not been returned before, return it 
+        STEP 2) Pop an expression from the queue.
+        If the expression is a Const or Var, and it has not been returned before, return it
         """
         if self.m3_helper.num_calls == 0:
             # Initial Setup
@@ -399,28 +386,27 @@ class Synthesizer():
                             self.m3_helper.queues[hole.var.name][rule.symbol.name].append(expression)
                         elif isinstance(expression, GrammarVar):
                             self.m3_helper.queues[hole.var.name][rule.symbol.name].extend(self.ast.hole_can_use(hole.var.name))
-            
+
             hole_mappings = dict()
             for hole in self.ast.holes:
                 top_level_name = self.m3_helper.hole_data[hole.var.name].top_level_rule.symbol.name
                 top_queue = self.m3_helper.queues[hole.var.name][top_level_name]
 
-                return_expression = None 
                 popped_queue = []
                 num_to_pop = 1
                 while len(top_queue) > 0 and num_to_pop > 0:
                     popped = top_queue.pop(0)
                     popped_queue.append(popped)
-                    # if isinstance(popped, (BinaryExpr, UnaryExpr, Ite, BoolConst, IntConst, VarExpr)):
-                        
-                    if isinstance(return_expression, UnaryExpr):
+
+                    if isinstance(popped, UnaryExpr):
                         pass
-                        # num_to_pop += 1
-                    elif isinstance(return_expression, BinaryExpr):
+                        num_to_pop += 1
+                    elif isinstance(popped, BinaryExpr):
                         num_to_pop += 2
-                    elif isinstance(return_expression, Ite):
+                    elif isinstance(popped, Ite):
                         num_to_pop += 3
 
                     num_to_pop -= 1
-                # hole_mappings[hole.var.name] = return_expression
+                popped_queue.append(None)
+                hole_mappings[hole.var.name] = popped_queue[0]
         return hole_mappings
