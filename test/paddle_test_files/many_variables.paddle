@@ -1,0 +1,10 @@
+input t : int;
+input u : int;
+input v : int;
+input w : int;
+input x : int;
+input y : int;
+input z : int;
+define c : int = t + u + v + w + x + y + z;
+define d : int = t - u - v - w - x - y - z;
+assert (c > d);
