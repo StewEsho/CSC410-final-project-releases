@@ -153,7 +153,6 @@ class TestStudent(unittest.TestCase):
         # Definitions
         self.assertEqual(len(prog.inputs), 7, msg="In %s, we expected exactly 7 inputs." % filename)
 
-        prog_res = empty.evaluate(prog)
         # The result should be an expression
         self.assertIsInstance(prog_res, Expression)
         # In this particular case, the expression should be a binary expression
