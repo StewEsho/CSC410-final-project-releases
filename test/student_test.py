@@ -2,6 +2,9 @@ from lang.ast import BinaryExpr, BinaryOperator, PaddleType, VarExpr, Variable
 import unittest
 from verification.verifier import *
 from z3 import *
+from pathlib import Path
+from lang.paddle import parse
+from lang.symb_eval import EvaluationUndefinedHoleError, Evaluator
 
 class TestStudent(unittest.TestCase):
 
@@ -11,6 +14,77 @@ class TestStudent(unittest.TestCase):
     ###############################
     ## Q2) Symbolic Evaluation
     ###############################
+
+    def test_basic_example(self):
+        """
+        A basic example that tests two variables.
+        """
+        filename = '%s/test/paddle_test_files/basic_example.paddle' % Path(
+            __file__).parent.parent.absolute()
+        if not os.path.exists(filename):
+            raise Exception(
+                "TestEval is looking for %s. Make sure file exists." % filename)
+
+        prog: Program = parse(filename)
+        empty = Evaluator({})
+        # Evaluating this program with no hole definitions should raise an EvaluationUndefinedHoleError
+        with self.assertRaises(EvaluationUndefinedHoleError):
+            empty.evaluate(prog)
+        # Definitions
+        self.assertEqual(len(prog.inputs), 2,
+                    msg="In %s, we expected exactly 2 inputs." % filename)
+        x = VarExpr(prog.inputs[0])
+        y = VarExpr(prog.inputs[1])
+        e1 = BinaryExpr(BinaryOperator.EQUALS, x, y)
+        e2 = Ite(e1, x, y)
+        defined = Evaluator({"h": e2})
+        prog_res = defined.evaluate(prog)
+        # The result should be an expression
+        self.assertIsInstance(prog_res, Expression)
+        # In this particular case, the expression should be a binary expression
+        self.assertIsInstance(prog_res, BinaryExpr)
+        # and the operator should be &&
+        self.assertEqual(prog_res.operator, BinaryOperator.AND)
+        # there is only two variables in prog_res
+        self.assertEqual(len(prog_res.uses()), 2)
+
+    def test_three_variables(self):
+        """
+        Same as test_basic_example but with three variables.
+        """
+        filename = '%s/test/paddle_test_files/three_variables.paddle' % Path(
+            __file__).parent.parent.absolute()
+        if not os.path.exists(filename):
+            raise Exception(
+                "TestEval is looking for %s. Make sure file exists." % filename)
+        
+        prog: Program = parse(filename)
+        empty = Evaluator({})
+        # Evaluating this program with no hole definitions should raise an EvaluationUndefinedHoleError
+        with self.assertRaises(EvaluationUndefinedHoleError):
+            empty.evaluate(prog)
+        # Definitions
+        self.assertEqual(len(prog.inputs), 3,
+            msg="In %s, we expected exactly 3 inputs." % filename)
+        x = VarExpr(prog.inputs[0])
+        y = VarExpr(prog.inputs[1])
+        z = VarExpr(prog.inputs[2])
+
+        e1 = BinaryExpr(BinaryOperator.EQUALS, x, y)
+        e2 = Ite(e1, x, z)
+        defined = Evaluator({"h": e2})
+        prog_res = defined.evaluate(prog)
+        # The result should be an expression
+        self.assertIsInstance(prog_res, Expression)
+        # In this particular case, the expression should be a binary expression
+        self.assertIsInstance(prog_res, BinaryExpr)
+        # and the operator should be &&
+        self.assertEqual(prog_res.operator, BinaryOperator.AND)
+        # there is only two variables in prog_res
+        self.assertEqual(len(prog_res.uses()), 3)
+        
+
+
 
     ###############################
     ## Q3) Verifying Programs
@@ -126,7 +200,7 @@ class TestStudent(unittest.TestCase):
 
         self.assertTrue(ast_to_z3.convert(BoolConst(True)))
         self.assertFalse(ast_to_z3.convert(BoolConst(False)))
-        self.assertEquals(ast_to_z3.convert(IntConst(5)), 5)
+        self.assertEqual(ast_to_z3.convert(IntConst(5)), 5)
     
     def test_ast_to_z3_exception(self):
         """

@@ -1,0 +1,9 @@
+input x : int;
+input y : int;
+// Holes
+hole h : int [
+  G : int -> G + B | Var;
+  B : int -> Integer
+];
+define c : int = h; // Var in the rule of G is x or y
+assert (((c >= x) && (c >= y)) && (c = x || c = y));
