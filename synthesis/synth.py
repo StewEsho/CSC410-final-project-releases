@@ -386,9 +386,7 @@ class Synthesizer():
         STEP 1) If the queue is empty, return None
 
         STEP 2) Pop an expression from the queue. 
-        If the expression is a Const or Var, and it has not been returned before, return it
-        
-        STEP 3) If the popped expression contains 
+        If the expression is a Const or Var, and it has not been returned before, return it 
         """
         if self.m3_helper.num_calls == 0:
             # Initial Setup
