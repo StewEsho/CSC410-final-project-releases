@@ -6,13 +6,13 @@ from pathlib import Path
 from lang.paddle import parse
 from lang.symb_eval import EvaluationUndefinedHoleError, Evaluator
 
-class TestStudent(unittest.TestCase):
 
+class TestStudent(unittest.TestCase):
     def test_sanity_student(self):
         self.assertTrue(True)
 
     ###############################
-    ## Q2) Symbolic Evaluation
+    # Q2) Symbolic Evaluation
     ###############################
 
     def test_basic_example(self):
@@ -31,8 +31,7 @@ class TestStudent(unittest.TestCase):
         with self.assertRaises(EvaluationUndefinedHoleError):
             empty.evaluate(prog)
         # Definitions
-        self.assertEqual(len(prog.inputs), 2,
-                    msg="In %s, we expected exactly 2 inputs." % filename)
+        self.assertEqual(len(prog.inputs), 2, msg="In %s, we expected exactly 2 inputs." % filename)
         x = VarExpr(prog.inputs[0])
         y = VarExpr(prog.inputs[1])
         e1 = BinaryExpr(BinaryOperator.EQUALS, x, y)
@@ -64,8 +63,7 @@ class TestStudent(unittest.TestCase):
         with self.assertRaises(EvaluationUndefinedHoleError):
             empty.evaluate(prog)
         # Definitions
-        self.assertEqual(len(prog.inputs), 3,
-            msg="In %s, we expected exactly 3 inputs." % filename)
+        self.assertEqual(len(prog.inputs), 3, msg="In %s, we expected exactly 3 inputs." % filename)
         x = VarExpr(prog.inputs[0])
         y = VarExpr(prog.inputs[1])
         z = VarExpr(prog.inputs[2])
@@ -138,9 +136,8 @@ class TestStudent(unittest.TestCase):
         # They should be different (5 != 4)
         self.assertFalse(eval(str(lhs)) == eval(str(rhs)))
 
-
     ###############################
-    ## Q3) Verifying Programs
+    # Q3) Verifying Programs
     ###############################
 
     def test_ast_to_z3_variable(self):
@@ -207,7 +204,7 @@ class TestStudent(unittest.TestCase):
         """
         ast_to_z3 = AstToZ3()
 
-        var =  VarExpr(Variable('x', PaddleType.INT))
+        var = VarExpr(Variable('x', PaddleType.INT))
         expr = UnaryExpr(UnaryOperator.NEG, var)
         
         expected = -Int('x')
@@ -221,7 +218,7 @@ class TestStudent(unittest.TestCase):
         """
         ast_to_z3 = AstToZ3()
 
-        var =  VarExpr(Variable('x', PaddleType.BOOL))
+        var = VarExpr(Variable('x', PaddleType.BOOL))
         expr = UnaryExpr(UnaryOperator.NOT, var)
         
         expected = Not(Bool('x'))
@@ -271,5 +268,5 @@ class TestStudent(unittest.TestCase):
             ast_to_z3.convert(Expression())
 
     ###############################
-    ## Q4) Enumerating Programs
+    # Q4) Enumerating Programs
     ###############################

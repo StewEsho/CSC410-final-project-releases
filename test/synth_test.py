@@ -45,12 +45,13 @@ def testFile(testcase, filename):
             "TestSynth is looking for %s, which was in the starter code.\
                  Make sure file exists." % filename)
     r1 = main_loop_synth_check(1, filename)
-
     testcase.assertTrue(
         r1, msg="Method 1 failed to synthesize a solution for %s." % filename)
+    
     r2 = main_loop_synth_check(2, filename)
     testcase.assertTrue(
         r2, msg="Method 2 failed to synthesize a solution for %s." % filename)
+    
     r3 = main_loop_synth_check(3, filename)
     testcase.assertTrue(
         r3, msg="Method 3 failed to synthesize a solution for %s." % filename)

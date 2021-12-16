@@ -29,10 +29,10 @@ from test.eval_test import *
 from test.verif_test import *
 
 # TODO Once you have completed 4 - Enumerating Progams, uncomment the next line
-# from test.enumerate_test import *
+from test.enumerate_test import *
 
 # TODO Once you have completed 3 and 4, uncomment the next line.
-# from test.synth_test import *
+from test.synth_test import *
 # You should also check on some input files that the correct
 # program is synthesized.
 

@@ -10,6 +10,7 @@ from z3 import *
 from lang.ast import *
 from typing import Union
 
+
 class AstToZ3:
     def __init__(self) -> None:
         self.pythonize_map = {
@@ -53,7 +54,6 @@ class AstToZ3:
             else:
                 result = eval(f"lhs {operator} rhs")
 
-
         # Case 2 : formula is a unary expression.
         elif isinstance(formula, UnaryExpr):
             operand = self.convert(formula.operand)
@@ -77,13 +77,12 @@ class AstToZ3:
 
         # Case 4: formula is a variable
         elif isinstance(formula, VarExpr):
-            # TODO: clean up by using type->function dictionary
             if formula.var.type == PaddleType.INT:
                 result = Int(formula.var.name)
             elif formula.var.type == PaddleType.BOOL:
                 result = Bool(formula.var.name)
             else:
-                None #TODO: add better edge case here
+                None
 
         # Case 5 : formula is a constant
         elif isinstance(formula, (BoolConst, IntConst)):
@@ -105,25 +104,15 @@ class AstToZ3:
         
         return result
 
+
 def is_valid(formula: Expression) -> bool:
     """
     Returns true if the formula is valid.
     """
     z3_converter = AstToZ3()
     z3_formula = z3_converter.convert(formula)
-    s=Solver()
+    s = Solver()
     # To solve for validity instead of satisfiability,
     # we negate the formula and check if its unsatisfiable
     s.add(Not(z3_formula))
     return s.check() == unsat
-
-# if __name__ == "__main__":
-#     x = VarExpr(Variable("x", PaddleType.INT))
-#     y = VarExpr(Variable("y", PaddleType.INT))
-#     x_gt_y = BinaryExpr(BinaryOperator.GREATER, x, y)
-#     # y_gt_3 = BinaryExpr(BinaryOperator.GREATER, y, IntConst(3))
-#     y_gt_3 = BinaryExpr(BinaryOperator.GREATER, y, x)
-#     full_expr = BinaryExpr(BinaryOperator.AND, x_gt_y, y_gt_3)
-#     print(str(full_expr))
-#     print('-------------------')
-#     print(is_valid(full_expr))

@@ -12,6 +12,7 @@ from z3 import *
 from lang.ast import *
 import itertools
 
+
 class ProductionRuleData:
     """
     Stores data of a ProductionRule in format that is easier for synthesizer to parse
@@ -98,10 +99,13 @@ class HoleData:
 
 
 class Method1Helper:
+    """
+    Collection of methods and properties to help store state for synth_method_1
+    """
     def __init__(self):
-        self.hole_data: Mapping[str, HoleData] = dict() # Mapping from hole to HoleData
+        self.hole_data: Mapping[str, HoleData] = dict()  # Mapping from hole to HoleData
 
-    def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData=None) -> Expression:
+    def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData = None) -> Expression:
 
         # Initialize the return value
         return_expression: Expression = None
@@ -114,28 +118,22 @@ class Method1Helper:
         if len(data.top_level_rule.binary_exprs) > 0:
             bin_expr = data.top_level_rule.binary_exprs[0]
             operator = bin_expr.operator
-
-        
-
-        # if isinstance(ex, BinaryExpr):
-        #     operator = ex.operator
-        #     lhs = ex.left_operand
-        #     rhs = ex.right_operand
-
-        #     lhs = self.evaluate_expr(var_defs, lhs)
-        #     rhs = self.evaluate_expr(var_defs, rhs)
-        #     result = BinaryExpr(operator, lhs, rhs)
         
         # Return the expression to be put into hole_mappings[hole.var.name]
         return return_expression
 
 
-
 class Method2Helper:
+    """
+    Collection of methods and properties to help store state for synth_method_2
+    """
     def __init__(self):
-        self.history: List[Mapping[str, Expression]] = list() # List of dictionaries, containing the returned mappings in chronological order
-        self.num_calls: int = 0 # The number of calls to the method
-        self.hole_data: Mapping[str, HoleData] = dict() # Mapping from hole to HoleData
+        # List of dictionaries, containing the returned mappings in chronological order
+        self.history: List[Mapping[str, Expression]] = list()
+        # The number of calls to the method
+        self.num_calls: int = 0
+        # Mapping from hole to HoleData
+        self.hole_data: Mapping[str, HoleData] = dict()
 
     def get_fixed_simple_expression_from_hole_data(self, hole_data: HoleData, vars_to_use: List[Variable]) -> Expression:
         """
@@ -152,7 +150,7 @@ class Method2Helper:
             return hole_data.top_level_rule.consts[0]
         return None
 
-    def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData=None) -> Expression:
+    def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData = None) -> Expression:
         try:
             if data is None:
                 data = self.hole_data[hole.var.name]
@@ -204,8 +202,6 @@ class Method2Helper:
             
             return_expression = BinaryExpr(operator, lhs, rhs)
 
-        # TODO: add in logic for Unary Expression, Binary Expression, ITE expression
-        
         data.top_level_rule.history.append(return_expression)
         return return_expression
 
@@ -297,7 +293,6 @@ class Synthesizer():
         for hole in self.ast.holes:
             hole_mappings[hole.var.name] = self.m1_helper.hole_to_expression(hole, self.ast.hole_can_use(hole.var.name))
 
-
         # self.m2_helper.history.append(hole_mappings)
         # self.m2_helper.num_calls += 1
         return hole_mappings
@@ -372,7 +367,6 @@ class Synthesizer():
         for hole in self.ast.holes:
             hole_mappings[hole.var.name] = self.m2_helper.hole_to_expression(hole, self.ast.hole_can_use(hole.var.name))
 
-
         self.m2_helper.history.append(hole_mappings)
         self.m2_helper.num_calls += 1
         return hole_mappings
@@ -396,6 +390,9 @@ class Synthesizer():
         
         STEP 3) If the popped expression contains 
         """
+        # Due to time constraints, we were unable to complete this method
+        raise NotImplementedError
+   
         if self.m3_helper.num_calls == 0:
             # Initial Setup
             for hole in self.ast.holes:
@@ -422,6 +419,7 @@ class Synthesizer():
                     # if isinstance(popped, (BinaryExpr, UnaryExpr, Ite, BoolConst, IntConst, VarExpr)):
                         
                     if isinstance(return_expression, UnaryExpr):
+                        pass
                         # num_to_pop += 1
                     elif isinstance(return_expression, BinaryExpr):
                         num_to_pop += 2
