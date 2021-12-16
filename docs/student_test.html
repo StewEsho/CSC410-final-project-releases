@@ -204,7 +204,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="s2">&quot;TestEval is looking for </span><span class="si">%s</span><span class="s2">. Make sure file exists.&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
-        
+
         <span class="n">prog</span><span class="p">:</span> <span class="n">Program</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="n">empty</span> <span class="o">=</span> <span class="n">Evaluator</span><span class="p">({})</span></pre></div>
     </div>
@@ -527,7 +527,7 @@ They should be different (5 != 4)</p>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="s2">&quot;TestEval is looking for </span><span class="si">%s</span><span class="s2">. Make sure file exists.&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
-        
+
         <span class="n">prog</span><span class="p">:</span> <span class="n">Program</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="n">empty</span> <span class="o">=</span> <span class="n">Evaluator</span><span class="p">({})</span>
         <span class="n">prog_res</span> <span class="o">=</span> <span class="n">empty</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">prog</span><span class="p">)</span></pre></div>
@@ -709,7 +709,7 @@ They should be different (5 != 4)</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-50'>#</a>
       </div>
-      <p>Assert that AstToZ3.convert properly converts an AST BinaryExpr between two INT variables 
+      <p>Assert that AstToZ3.convert properly converts an AST BinaryExpr between two INT variables
 <em>With a comparison operator</em> to z3 <em>BoolRef</em> format</p>
     </div>
     <div class='code'>
@@ -762,7 +762,7 @@ They should be different (5 != 4)</p>
 
         <span class="n">var</span> <span class="o">=</span> <span class="n">VarExpr</span><span class="p">(</span><span class="n">Variable</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">PaddleType</span><span class="o">.</span><span class="n">INT</span><span class="p">))</span>
         <span class="n">expr</span> <span class="o">=</span> <span class="n">UnaryExpr</span><span class="p">(</span><span class="n">UnaryOperator</span><span class="o">.</span><span class="n">NEG</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
-        
+
         <span class="n">expected</span> <span class="o">=</span> <span class="o">-</span><span class="n">Int</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
         <span class="n">actual</span> <span class="o">=</span> <span class="n">ast_to_z3</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">z3</span><span class="o">.</span><span class="n">z3</span><span class="o">.</span><span class="n">ArithRef</span><span class="p">)</span>
@@ -794,7 +794,7 @@ They should be different (5 != 4)</p>
 
         <span class="n">var</span> <span class="o">=</span> <span class="n">VarExpr</span><span class="p">(</span><span class="n">Variable</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">PaddleType</span><span class="o">.</span><span class="n">BOOL</span><span class="p">))</span>
         <span class="n">expr</span> <span class="o">=</span> <span class="n">UnaryExpr</span><span class="p">(</span><span class="n">UnaryOperator</span><span class="o">.</span><span class="n">NOT</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
-        
+
         <span class="n">expected</span> <span class="o">=</span> <span class="n">Not</span><span class="p">(</span><span class="n">Bool</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">))</span>
         <span class="n">actual</span> <span class="o">=</span> <span class="n">ast_to_z3</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">z3</span><span class="o">.</span><span class="n">z3</span><span class="o">.</span><span class="n">BoolRef</span><span class="p">)</span>
@@ -891,7 +891,7 @@ They should be different (5 != 4)</p>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
             <span class="n">ast_to_z3</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">GrammarInteger</span><span class="p">())</span>
-            
+
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
             <span class="n">ast_to_z3</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">Expression</span><span class="p">())</span></pre></div>
     </div>
