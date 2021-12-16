@@ -83,7 +83,60 @@ class TestStudent(unittest.TestCase):
         # there is only two variables in prog_res
         self.assertEqual(len(prog_res.uses()), 3)
         
+    def test_div_to_add_true(self):
+        """
+        Division test that asserts that a quotient is true.
+        """
+        filename = '%s/test/paddle_test_files/div_to_add_true.paddle' % Path(
+            __file__).parent.parent.absolute()
+        if not os.path.exists(filename):
+            raise Exception(
+                "TestEval is looking for %s. Make sure file exists." % filename)
 
+        prog: Program = parse(filename)
+        empty = Evaluator({})
+        prog_res = empty.evaluate(prog)
+        # The result should be an expression
+        self.assertIsInstance(prog_res, Expression)
+        # In this particular case, the expression should be a binary expression
+        self.assertIsInstance(prog_res, BinaryExpr)
+        # and the operator should be &&
+        self.assertEqual(prog_res.operator, BinaryOperator.EQUALS)
+        # there is only one variable in prog_res
+        self.assertEqual(len(prog_res.uses()), 1)
+        # Evaluate the expression
+        lhs = empty.evaluate_expr({"x": IntConst(0)}, prog_res.left_operand)
+        rhs = empty.evaluate_expr({"x": IntConst(0)}, prog_res.right_operand)
+        # These expressions can be evaluated in Python directly
+        self.assertTrue(eval(str(lhs)) == eval(str(rhs)))
+
+    def test_div_to_add_false(self):
+        """
+        Division test that asserts that a quotient is false.
+        """
+        filename = '%s/test/paddle_test_files/div_to_add_false.paddle' % Path(
+            __file__).parent.parent.absolute()
+        if not os.path.exists(filename):
+            raise Exception(
+                "TestEval is looking for %s. Make sure file exists." % filename)
+
+        prog: Program = parse(filename)
+        empty = Evaluator({})
+        prog_res = empty.evaluate(prog)
+        # The result should be an expression
+        self.assertIsInstance(prog_res, Expression)
+        # In this particular case, the expression should be a binary expression
+        self.assertIsInstance(prog_res, BinaryExpr)
+        # and the operator should be &&
+        self.assertEqual(prog_res.operator, BinaryOperator.EQUALS)
+        # there is only one variable in prog_res
+        self.assertEqual(len(prog_res.uses()), 1)
+        # Evaluate the expression
+        lhs = empty.evaluate_expr({"x": IntConst(1)}, prog_res.left_operand)
+        rhs = empty.evaluate_expr({"x": IntConst(1)}, prog_res.right_operand)
+        # These expressions can be evaluated in Python directly
+        # They should be different (5 != 4)
+        self.assertFalse(eval(str(lhs)) == eval(str(rhs)))
 
 
     ###############################
