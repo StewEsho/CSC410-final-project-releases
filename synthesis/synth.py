@@ -110,9 +110,21 @@ class Method1Helper:
         if data is None:
             data = self.hole_data[hole.var.name]
 
+        # Start with binary expressions and end with Integers
+        if len(data.top_level_rule.binary_exprs) > 0:
+            bin_expr = data.top_level_rule.binary_exprs[0]
+            operator = bin_expr.operator
+
         
 
+        # if isinstance(ex, BinaryExpr):
+        #     operator = ex.operator
+        #     lhs = ex.left_operand
+        #     rhs = ex.right_operand
 
+        #     lhs = self.evaluate_expr(var_defs, lhs)
+        #     rhs = self.evaluate_expr(var_defs, rhs)
+        #     result = BinaryExpr(operator, lhs, rhs)
         
         # Return the expression to be put into hole_mappings[hole.var.name]
         return return_expression
