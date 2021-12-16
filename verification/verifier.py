@@ -8,6 +8,7 @@ of the assignment.
 
 from z3 import *
 from lang.ast import *
+from typing import Union
 
 class AstToZ3:
     def __init__(self) -> None:
@@ -26,7 +27,7 @@ class AstToZ3:
             return self.pythonize_map[operator]
         return operator
 
-    def convert(self, formula: Expression) -> ExprRef:
+    def convert(self, formula: Expression) -> Union[ExprRef, bool, int]:
         """
         Converts the format of an AST expression 
         from lang.ast.Expression
@@ -84,20 +85,20 @@ class AstToZ3:
             else:
                 None #TODO: add better edge case here
 
-        # Case 5 : formula i a boolean constant
+        # Case 5 : formula is a constant
         elif isinstance(formula, (BoolConst, IntConst)):
             result = formula.value
 
         # Case 6 : formula is GrammarInteger or GramamrVar: this should
         # never happen during evaluation!
         elif isinstance(formula, (GrammarInteger, GrammarVar)):
-            raise EvaluationTypeError(
+            raise TypeError(
                 "GrammarInteger and GrammarVar should not appear in\
                     expressions that are evaluated.")
 
         # Case 7 should never be reached.
         elif isinstance(formula, Expression):
-            raise EvaluationTypeError(
+            raise TypeError(
                 "Argument is an Expression of unknown type!\n\
                     Maybe you forgot to implement a case in \
                         verifier.expression_to_z3")
