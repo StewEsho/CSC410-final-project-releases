@@ -210,6 +210,21 @@ class Method2Helper:
         return return_expression
 
 
+class Method3Helper:
+    """
+    Collection of methods and properties to help store state for synth_method_3
+    """
+    def __init__(self) -> None:
+        # Stores queued expressions for each hole.
+        # Data is stored as a mapping from hole name to a dict
+        # the dict then maps each production rule in the grammar to a list, which acts as that rule's queue
+        self.queues: Mapping[str, Mapping[str, List[Expression]]] = dict()
+        # Tracks number of times synth_method_3 has been called
+        self.num_calls: int = 0
+        # Stores HoleData for each hole
+        self.hole_data: Mapping[str, HoleData] = dict()
+        
+
 class Synthesizer():
     """
     This class is has three methods `synth_method_1`, `synth_method_2` or
@@ -259,13 +274,11 @@ class Synthesizer():
         self.method1_state = None
         self.m1_helper = Method1Helper()
         self.m2_helper = Method2Helper()
-        self.method3_state = None
+        self.m3_helper = Method3Helper()
+        self.method3_state = Method3Helper()
         # The synthesizer is initialized with the program ast it needs
         # to synthesize hole completions for.
         self.ast = ast
-
-    # TODO: implement something that allows you to remember which
-    # programs have already been generated.
 
     def synth_method_1(self,) -> Mapping[str, Expression]:
         """
@@ -369,7 +382,52 @@ class Synthesizer():
         Returns a map from each hole id in the program `self.ast`
         to an expression (method 3).
 
-        **TODO: write a description of your approach in this method.**
+        This method uses a queue to generate the expressions.
+        Each hole has a set of queues, one for each production rule
+
+        When we want to generate an expresion, first we check if the top-level rule contains "Integer"
+        If so, then save time going thru the queues and just return an integer that increments every call
+        Otherwise, go through the steps below
+
+        STEP 1) If the queue is empty, return None
+
+        STEP 2) Pop an expression from the queue. 
+        If the expression is a Const or Var, and it has not been returned before, return it
+        
+        STEP 3) If the popped expression contains 
         """
-        # TODO : complete this method
-        raise Exception("Synth.synth_method_3 is not implemented.")
+        if self.m3_helper.num_calls == 0:
+            # Initial Setup
+            for hole in self.ast.holes:
+                self.m3_helper.queues[hole.var.name] = dict()
+                for rule in hole.grammar.rules:
+                    self.m3_helper.queues[hole.var.name][rule.symbol.name] = list()
+                    for expression in rule.productions:
+                        if isinstance(expression, (BinaryExpr, UnaryExpr, Ite, BoolConst, IntConst, VarExpr)):
+                            self.m3_helper.queues[hole.var.name][rule.symbol.name].append(expression)
+                        elif isinstance(expression, GrammarVar):
+                            self.m3_helper.queues[hole.var.name][rule.symbol.name].extend(self.ast.hole_can_use(hole.var.name))
+            
+            hole_mappings = dict()
+            for hole in self.ast.holes:
+                top_level_name = self.m3_helper.hole_data[hole.var.name].top_level_rule.symbol.name
+                top_queue = self.m3_helper.queues[hole.var.name][top_level_name]
+
+                return_expression = None 
+                popped_queue = []
+                num_to_pop = 1
+                while len(top_queue) > 0 and num_to_pop > 0:
+                    popped = top_queue.pop(0)
+                    popped_queue.append(popped)
+                    # if isinstance(popped, (BinaryExpr, UnaryExpr, Ite, BoolConst, IntConst, VarExpr)):
+                        
+                    if isinstance(return_expression, UnaryExpr):
+                        # num_to_pop += 1
+                    elif isinstance(return_expression, BinaryExpr):
+                        num_to_pop += 2
+                    elif isinstance(return_expression, Ite):
+                        num_to_pop += 3
+
+                    num_to_pop -= 1
+                # hole_mappings[hole.var.name] = return_expression
+        return hole_mappings
