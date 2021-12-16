@@ -102,31 +102,6 @@ class Method1Helper:
     Collection of methods and properties to help store state for synth_method_1
     """
     def __init__(self):
-        self.hole_data: Mapping[str, HoleData] = dict()  # Mapping from hole to HoleData
-
-    def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData = None) -> Expression:
-
-        # Initialize the return value
-        return_expression: Expression = None
-
-        # Fill in for empty hole data => not a recursive call
-        if data is None:
-            data = self.hole_data[hole.var.name]
-
-        # Start with binary expressions and end with Integers
-        if len(data.top_level_rule.binary_exprs) > 0:
-            bin_expr = data.top_level_rule.binary_exprs[0]
-            operator = bin_expr.operator
-
-        # Return the expression to be put into hole_mappings[hole.var.name]
-        return return_expression
-
-
-class Method2Helper:
-    """
-    Collection of methods and properties to help store state for synth_method_2
-    """
-    def __init__(self):
         # List of dictionaries, containing the returned mappings in chronological order
         self.history: List[Mapping[str, Expression]] = list()
         # The number of calls to the method
@@ -150,6 +125,9 @@ class Method2Helper:
         return None
 
     def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData = None) -> Expression:
+        """
+        Generate an expression that fills hole
+        """
         try:
             if data is None:
                 data = self.hole_data[hole.var.name]
@@ -190,6 +168,33 @@ class Method2Helper:
             return_expression = BinaryExpr(operator, lhs, rhs)
 
         data.top_level_rule.history.append(return_expression)
+        return return_expression
+
+
+class Method2Helper:
+    """
+    Collection of methods and properties to help store state for synth_method_2
+    """
+    def __init__(self):
+        self.hole_data: Mapping[str, HoleData] = dict()  # Mapping from hole to HoleData
+
+    def hole_to_expression(self, hole: HoleDeclaration, vars_to_use: List[Variable], data: HoleData = None) -> Expression:
+        """
+        Generate an expression that fills hole
+        """
+        # Initialize the return value
+        return_expression: Expression = None
+
+        # Fill in for empty hole data => not a recursive call
+        if data is None:
+            data = self.hole_data[hole.var.name]
+
+        # Start with binary expressions and end with Integers
+        if len(data.top_level_rule.binary_exprs) > 0:
+            bin_expr = data.top_level_rule.binary_exprs[0]
+            operator = bin_expr.operator
+
+        # Return the expression to be put into hole_mappings[hole.var.name]
         return return_expression
 
 
@@ -268,27 +273,6 @@ class Synthesizer():
         Returns a map from each hole id in the program `self.ast`
         to an expression (method 1).
 
-        **TODO: write a description of your approach in this method.**
-        """
-        # if self.m2_helper.num_calls == 0:
-        #     # Initial setup
-        #     for hole in self.ast.holes:
-        #         self.m2_helper.hole_data[hole.var.name] = HoleData(hole)
-        #         self.m2_helper.holes[hole.var.name] = hole
-
-        hole_mappings = dict()
-        for hole in self.ast.holes:
-            hole_mappings[hole.var.name] = self.m1_helper.hole_to_expression(hole, self.ast.hole_can_use(hole.var.name))
-
-        # self.m2_helper.history.append(hole_mappings)
-        # self.m2_helper.num_calls += 1
-        return hole_mappings
-
-    def synth_method_2(self,) -> Mapping[str, Expression]:
-        """
-        Returns a map from each hole id in the program `self.ast`
-        to an expression (method 2).
-
         This is an Raw-Value Priority enumeration method.
         The goal is to try to fill the hole with computationally easy fillings first,
         and only fill it with complex expressions as a last resort.
@@ -344,18 +328,31 @@ class Synthesizer():
         >> 3
         . . .
         """
-        if self.m2_helper.num_calls == 0:
+        if self.m1_helper.num_calls == 0:
             # Initial setup
             for hole in self.ast.holes:
-                self.m2_helper.hole_data[hole.var.name] = HoleData(hole)
-                self.m2_helper.holes[hole.var.name] = hole
+                self.m1_helper.hole_data[hole.var.name] = HoleData(hole)
+                self.m1_helper.holes[hole.var.name] = hole
 
+        hole_mappings = dict()
+        for hole in self.ast.holes:
+            hole_mappings[hole.var.name] = self.m1_helper.hole_to_expression(hole, self.ast.hole_can_use(hole.var.name))
+
+        self.m1_helper.history.append(hole_mappings)
+        self.m1_helper.num_calls += 1
+        return hole_mappings
+
+    def synth_method_2(self,) -> Mapping[str, Expression]:
+        """
+        Returns a map from each hole id in the program `self.ast`
+        to an expression (method 2).
+
+        **TODO: write a description of your approach in this method.**
+        """
         hole_mappings = dict()
         for hole in self.ast.holes:
             hole_mappings[hole.var.name] = self.m2_helper.hole_to_expression(hole, self.ast.hole_can_use(hole.var.name))
 
-        self.m2_helper.history.append(hole_mappings)
-        self.m2_helper.num_calls += 1
         return hole_mappings
 
     def synth_method_3(self,) -> Mapping[str, Expression]:

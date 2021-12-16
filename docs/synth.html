@@ -331,8 +331,7 @@ Return True if expression was successfully added to a collection, otherwise retu
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hole_data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HoleData</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># Mapping from hole to HoleData</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -341,10 +340,10 @@ Return True if expression was successfully added to a collection, otherwise retu
       <div class='octowrap'>
         <a class='octothorpe' href='#section-24'>#</a>
       </div>
-      
+      <p>List of dictionaries, containing the returned mappings in chronological order</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">hole_to_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hole</span><span class="p">:</span> <span class="n">HoleDeclaration</span><span class="p">,</span> <span class="n">vars_to_use</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Variable</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">HoleData</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span></pre></div>
+      <div class="highlight"><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -353,10 +352,10 @@ Return True if expression was successfully added to a collection, otherwise retu
       <div class='octowrap'>
         <a class='octothorpe' href='#section-25'>#</a>
       </div>
-      <p>Initialize the return value</p>
+      <p>The number of calls to the method</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>        <span class="n">return_expression</span><span class="p">:</span> <span class="n">Expression</span> <span class="o">=</span> <span class="kc">None</span></pre></div>
+      <div class="highlight"><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">num_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -365,93 +364,6 @@ Return True if expression was successfully added to a collection, otherwise retu
       <div class='octowrap'>
         <a class='octothorpe' href='#section-26'>#</a>
       </div>
-      <p>Fill in for empty hole data =&gt; not a recursive call</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hole_data</span><span class="p">[</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-27'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-27'>#</a>
-      </div>
-      <p>Start with binary expressions and end with Integers</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">top_level_rule</span><span class="o">.</span><span class="n">binary_exprs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">bin_expr</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">top_level_rule</span><span class="o">.</span><span class="n">binary_exprs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">operator</span> <span class="o">=</span> <span class="n">bin_expr</span><span class="o">.</span><span class="n">operator</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-28'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-28'>#</a>
-      </div>
-      <p>Return the expression to be put into hole_mappings[hole.var.name]</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">return</span> <span class="n">return_expression</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-29'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-29'>#</a>
-      </div>
-      <p>Collection of methods and properties to help store state for synth_method_2</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Method2Helper</span><span class="p">:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-30'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-30'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-31'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-31'>#</a>
-      </div>
-      <p>List of dictionaries, containing the returned mappings in chronological order</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-32'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-32'>#</a>
-      </div>
-      <p>The number of calls to the method</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">num_calls</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-33'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-33'>#</a>
-      </div>
       <p>Mapping from hole to HoleData</p>
     </div>
     <div class='code'>
@@ -459,10 +371,10 @@ Return True if expression was successfully added to a collection, otherwise retu
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-34'>
+  <div class='section' id='section-27'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-34'>#</a>
+        <a class='octothorpe' href='#section-27'>#</a>
       </div>
       <p>Return a simple expression from given HoleData instance.
 This method is <em>deterministic</em>, so calling it twice on the same data will return the same result.
@@ -473,10 +385,10 @@ A simple expression is one of VarExpr, IntConst, or BoolConst</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-35'>
+  <div class='section' id='section-28'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-35'>#</a>
+        <a class='octothorpe' href='#section-28'>#</a>
       </div>
       
     </div>
@@ -492,16 +404,27 @@ A simple expression is one of VarExpr, IntConst, or BoolConst</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-36'>
+  <div class='section' id='section-29'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-36'>#</a>
+        <a class='octothorpe' href='#section-29'>#</a>
+      </div>
+      <p>Generate an expression that fills hole</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">hole_to_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hole</span><span class="p">:</span> <span class="n">HoleDeclaration</span><span class="p">,</span> <span class="n">vars_to_use</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Variable</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">HoleData</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-30'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-30'>#</a>
       </div>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">hole_to_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hole</span><span class="p">:</span> <span class="n">HoleDeclaration</span><span class="p">,</span> <span class="n">vars_to_use</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Variable</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">HoleData</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
+      <div class="highlight"><pre>        <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hole_data</span><span class="p">[</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -513,10 +436,10 @@ A simple expression is one of VarExpr, IntConst, or BoolConst</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-37'>
+  <div class='section' id='section-31'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-37'>#</a>
+        <a class='octothorpe' href='#section-31'>#</a>
       </div>
       <p>Step 1) Integers</p>
     </div>
@@ -526,10 +449,10 @@ A simple expression is one of VarExpr, IntConst, or BoolConst</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-38'>
+  <div class='section' id='section-32'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-38'>#</a>
+        <a class='octothorpe' href='#section-32'>#</a>
       </div>
       <p>Step 2) Variables</p>
     </div>
@@ -540,10 +463,10 @@ A simple expression is one of VarExpr, IntConst, or BoolConst</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-39'>
+  <div class='section' id='section-33'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-39'>#</a>
+        <a class='octothorpe' href='#section-33'>#</a>
       </div>
       <p>Step 3) Constants</p>
     </div>
@@ -554,10 +477,10 @@ A simple expression is one of VarExpr, IntConst, or BoolConst</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-40'>
+  <div class='section' id='section-34'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-40'>#</a>
+        <a class='octothorpe' href='#section-34'>#</a>
       </div>
       <p>Step 4) Expressions
 We want to avoid unary expressions if possible, since uniary operators are their own inverse
@@ -574,10 +497,10 @@ We want to avoid unary expressions if possible, since uniary operators are their
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-41'>
+  <div class='section' id='section-35'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-41'>#</a>
+        <a class='octothorpe' href='#section-35'>#</a>
       </div>
       <p>attempt to fix the LHS to a simple value</p>
     </div>
@@ -592,15 +515,91 @@ We want to avoid unary expressions if possible, since uniary operators are their
     </div>
   </div>
   <div class='clearall'></div>
+  <div class='section' id='section-36'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-36'>#</a>
+      </div>
+      <p>Collection of methods and properties to help store state for synth_method_2</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Method2Helper</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-37'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-37'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hole_data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HoleData</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># Mapping from hole to HoleData</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-38'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-38'>#</a>
+      </div>
+      <p>Generate an expression that fills hole</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">hole_to_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hole</span><span class="p">:</span> <span class="n">HoleDeclaration</span><span class="p">,</span> <span class="n">vars_to_use</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Variable</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">HoleData</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-39'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-39'>#</a>
+      </div>
+      <p>Initialize the return value</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">return_expression</span><span class="p">:</span> <span class="n">Expression</span> <span class="o">=</span> <span class="kc">None</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-40'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-40'>#</a>
+      </div>
+      <p>Fill in for empty hole data =&gt; not a recursive call</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hole_data</span><span class="p">[</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-41'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-41'>#</a>
+      </div>
+      <p>Start with binary expressions and end with Integers</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">top_level_rule</span><span class="o">.</span><span class="n">binary_exprs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bin_expr</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">top_level_rule</span><span class="o">.</span><span class="n">binary_exprs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">operator</span> <span class="o">=</span> <span class="n">bin_expr</span><span class="o">.</span><span class="n">operator</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
   <div class='section' id='section-42'>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-42'>#</a>
       </div>
-      <p>Collection of methods and properties to help store state for synth_method_3</p>
+      <p>Return the expression to be put into hole_mappings[hole.var.name]</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Method3Helper</span><span class="p">:</span></pre></div>
+      <div class="highlight"><pre>        <span class="k">return</span> <span class="n">return_expression</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -609,10 +608,10 @@ We want to avoid unary expressions if possible, since uniary operators are their
       <div class='octowrap'>
         <a class='octothorpe' href='#section-43'>#</a>
       </div>
-      
+      <p>Collection of methods and properties to help store state for synth_method_3</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span></pre></div>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Method3Helper</span><span class="p">:</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -620,6 +619,18 @@ We want to avoid unary expressions if possible, since uniary operators are their
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-44'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-45'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-45'>#</a>
       </div>
       <p>Stores queued expressions for each hole.
 Data is stored as a mapping from hole name to a dict
@@ -630,10 +641,10 @@ the dict then maps each production rule in the grammar to a list, which acts as 
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-45'>
+  <div class='section' id='section-46'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-45'>#</a>
+        <a class='octothorpe' href='#section-46'>#</a>
       </div>
       <p>Tracks number of times synth_method_3 has been called</p>
     </div>
@@ -642,10 +653,10 @@ the dict then maps each production rule in the grammar to a list, which acts as 
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-46'>
+  <div class='section' id='section-47'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-46'>#</a>
+        <a class='octothorpe' href='#section-47'>#</a>
       </div>
       <p>Stores HoleData for each hole</p>
     </div>
@@ -654,10 +665,10 @@ the dict then maps each production rule in the grammar to a list, which acts as 
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-47'>
+  <div class='section' id='section-48'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-47'>#</a>
+        <a class='octothorpe' href='#section-48'>#</a>
       </div>
       <p>This class is has three methods <code>synth_method_1</code>, <code>synth_method_2</code> or
 <code>synth_method_3</code> for generating expression for a program&rsquo;s holes.</p>
@@ -696,10 +707,10 @@ e.g. <code>prog.hole_can_use("h1")</code> returns the variables that &ldquo;h1&r
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-48'>
+  <div class='section' id='section-49'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-48'>#</a>
+        <a class='octothorpe' href='#section-49'>#</a>
       </div>
       
     </div>
@@ -708,10 +719,10 @@ e.g. <code>prog.hole_can_use("h1")</code> returns the variables that &ldquo;h1&r
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-49'>
+  <div class='section' id='section-50'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-49'>#</a>
+        <a class='octothorpe' href='#section-50'>#</a>
       </div>
       <p>Initialize the Synthesizer.
 The Synthesizer can have a state or other data attributes and
@@ -722,10 +733,10 @@ methods to remember which programs have been synthesized before.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-50'>
+  <div class='section' id='section-51'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-50'>#</a>
+        <a class='octothorpe' href='#section-51'>#</a>
       </div>
       
     </div>
@@ -738,10 +749,10 @@ methods to remember which programs have been synthesized before.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-51'>
+  <div class='section' id='section-52'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-51'>#</a>
+        <a class='octothorpe' href='#section-52'>#</a>
       </div>
       <p>The synthesizer is initialized with the program ast it needs
 to synthesize hole completions for.</p>
@@ -751,58 +762,13 @@ to synthesize hole completions for.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-52'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-52'>#</a>
-      </div>
-      <p>Returns a map from each hole id in the program <code>self.ast</code>
-to an expression (method 1).</p>
-<p><strong>TODO: write a description of your approach in this method.</strong></p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">synth_method_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
   <div class='section' id='section-53'>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-53'>#</a>
       </div>
-      <p>if self.m2_helper.num_calls == 0:
-    # Initial setup
-    for hole in self.ast.holes:
-        self.m2_helper.hole_data[hole.var.name] = HoleData(hole)
-        self.m2_helper.holes[hole.var.name] = hole</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="n">hole_mappings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ast</span><span class="o">.</span><span class="n">holes</span><span class="p">:</span>
-            <span class="n">hole_mappings</span><span class="p">[</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m1_helper</span><span class="o">.</span><span class="n">hole_to_expression</span><span class="p">(</span><span class="n">hole</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ast</span><span class="o">.</span><span class="n">hole_can_use</span><span class="p">(</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-54'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-54'>#</a>
-      </div>
-      <p>self.m2_helper.history.append(hole_mappings)
-self.m2_helper.num_calls += 1</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>        <span class="k">return</span> <span class="n">hole_mappings</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-55'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-55'>#</a>
-      </div>
       <p>Returns a map from each hole id in the program <code>self.ast</code>
-to an expression (method 2).</p>
+to an expression (method 1).</p>
 <p>This is an Raw-Value Priority enumeration method.
 The goal is to try to fill the hole with computationally easy fillings first,
 and only fill it with complex expressions as a last resort.</p>
@@ -865,7 +831,41 @@ x
 </blockquote>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">synth_method_2</span><span class="p">(</span><span class="bp">self</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]:</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">synth_method_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-54'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-54'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">m1_helper</span><span class="o">.</span><span class="n">num_calls</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-55'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-55'>#</a>
+      </div>
+      <p>Initial setup</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>            <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ast</span><span class="o">.</span><span class="n">holes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">m1_helper</span><span class="o">.</span><span class="n">hole_data</span><span class="p">[</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">HoleData</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">m1_helper</span><span class="o">.</span><span class="n">holes</span><span class="p">[</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">hole</span>
+
+        <span class="n">hole_mappings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ast</span><span class="o">.</span><span class="n">holes</span><span class="p">:</span>
+            <span class="n">hole_mappings</span><span class="p">[</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m1_helper</span><span class="o">.</span><span class="n">hole_to_expression</span><span class="p">(</span><span class="n">hole</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ast</span><span class="o">.</span><span class="n">hole_can_use</span><span class="p">(</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">m1_helper</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hole_mappings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m1_helper</span><span class="o">.</span><span class="n">num_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">hole_mappings</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -874,10 +874,12 @@ x
       <div class='octowrap'>
         <a class='octothorpe' href='#section-56'>#</a>
       </div>
-      
+      <p>Returns a map from each hole id in the program <code>self.ast</code>
+to an expression (method 2).</p>
+<p><strong>TODO: write a description of your approach in this method.</strong></p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">m2_helper</span><span class="o">.</span><span class="n">num_calls</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span></pre></div>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">synth_method_2</span><span class="p">(</span><span class="bp">self</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]:</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -886,19 +888,13 @@ x
       <div class='octowrap'>
         <a class='octothorpe' href='#section-57'>#</a>
       </div>
-      <p>Initial setup</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre>            <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ast</span><span class="o">.</span><span class="n">holes</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">m2_helper</span><span class="o">.</span><span class="n">hole_data</span><span class="p">[</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">HoleData</span><span class="p">(</span><span class="n">hole</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">m2_helper</span><span class="o">.</span><span class="n">holes</span><span class="p">[</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">hole</span>
-
-        <span class="n">hole_mappings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+      <div class="highlight"><pre>        <span class="n">hole_mappings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">hole</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ast</span><span class="o">.</span><span class="n">holes</span><span class="p">:</span>
             <span class="n">hole_mappings</span><span class="p">[</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m2_helper</span><span class="o">.</span><span class="n">hole_to_expression</span><span class="p">(</span><span class="n">hole</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ast</span><span class="o">.</span><span class="n">hole_can_use</span><span class="p">(</span><span class="n">hole</span><span class="o">.</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">m2_helper</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hole_mappings</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">m2_helper</span><span class="o">.</span><span class="n">num_calls</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">hole_mappings</span></pre></div>
     </div>
   </div>

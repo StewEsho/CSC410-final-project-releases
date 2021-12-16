@@ -14,8 +14,8 @@ Steward Esho - eshostew
 
 # Roles and Tasks
 
-Eric Babak Jadidzadeh --> Q2 (Evaluator), Q4 (method1), Unit Tests
-Steward Esho --> Q3 (Verifier, Verifier Unit Tests), Q4 (mehtod2, method3)
+Eric Babak Jadidzadeh --> Q2 (Evaluator), Q4 (method2), Unit Tests
+Steward Esho --> Q3 (Verifier, Verifier Unit Tests), Q4 (mehtod1, method3)
 
 ---
 
