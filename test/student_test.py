@@ -80,7 +80,7 @@ class TestStudent(unittest.TestCase):
         self.assertIsInstance(prog_res, BinaryExpr)
         # and the operator should be &&
         self.assertEqual(prog_res.operator, BinaryOperator.AND)
-        # there is only two variables in prog_res
+        # there is only three variables in prog_res
         self.assertEqual(len(prog_res.uses()), 3)
         
     def test_div_to_add_true(self):
@@ -137,6 +137,34 @@ class TestStudent(unittest.TestCase):
         # These expressions can be evaluated in Python directly
         # They should be different (5 != 4)
         self.assertFalse(eval(str(lhs)) == eval(str(rhs)))
+
+    def test_many_variables(self):
+        """
+        A many variable test.
+        """
+        filename = '%s/test/paddle_test_files/many_variables.paddle' % Path(
+            __file__).parent.parent.absolute()
+        if not os.path.exists(filename):
+            raise Exception(
+                "TestEval is looking for %s. Make sure file exists." % filename)
+        
+        prog: Program = parse(filename)
+        empty = Evaluator({})
+        prog_res = empty.evaluate(prog)
+
+        # Definitions
+        self.assertEqual(len(prog.inputs), 7,
+            msg="In %s, we expected exactly 7 inputs." % filename)
+
+        prog_res = empty.evaluate(prog)
+        # The result should be an expression
+        self.assertIsInstance(prog_res, Expression)
+        # In this particular case, the expression should be a binary expression
+        self.assertIsInstance(prog_res, BinaryExpr)
+        # and the operator should be >
+        self.assertEqual(prog_res.operator, BinaryOperator.GREATER)
+        # there is only seven variables in prog_res
+        self.assertEqual(len(prog_res.uses()), 7)
 
 
     ###############################
