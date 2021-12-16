@@ -56,7 +56,7 @@ class TestStudent(unittest.TestCase):
         if not os.path.exists(filename):
             raise Exception(
                 "TestEval is looking for %s. Make sure file exists." % filename)
-        
+
         prog: Program = parse(filename)
         empty = Evaluator({})
         # Evaluating this program with no hole definitions should raise an EvaluationUndefinedHoleError
@@ -80,7 +80,7 @@ class TestStudent(unittest.TestCase):
         self.assertEqual(prog_res.operator, BinaryOperator.AND)
         # there is only three variables in prog_res
         self.assertEqual(len(prog_res.uses()), 3)
-        
+
     def test_div_to_add_true(self):
         """
         Division test that asserts that a quotient is true.
@@ -145,7 +145,7 @@ class TestStudent(unittest.TestCase):
         if not os.path.exists(filename):
             raise Exception(
                 "TestEval is looking for %s. Make sure file exists." % filename)
-        
+
         prog: Program = parse(filename)
         empty = Evaluator({})
         prog_res = empty.evaluate(prog)
@@ -192,7 +192,7 @@ class TestStudent(unittest.TestCase):
         actual = ast_to_z3.convert(expr)
         self.assertIsInstance(actual, z3.z3.ArithRef)
         self.assertTrue(expected.eq(actual))
-    
+
     def test_ast_to_z3_binary_expression_bool_ref(self):
         """
         Assert that AstToZ3.convert properly converts an AST BinaryExpr between two BOOL variables to z3 format
@@ -207,10 +207,10 @@ class TestStudent(unittest.TestCase):
         actual = ast_to_z3.convert(expr)
         self.assertIsInstance(actual, z3.z3.BoolRef)
         self.assertTrue(expected.eq(actual))
-    
+
     def test_ast_to_z3_binary_expression_arith_to_bool(self):
         """
-        Assert that AstToZ3.convert properly converts an AST BinaryExpr between two INT variables 
+        Assert that AstToZ3.convert properly converts an AST BinaryExpr between two INT variables
         *With a comparison operator* to z3 *BoolRef* format
         """
         ast_to_z3 = AstToZ3()
@@ -232,12 +232,12 @@ class TestStudent(unittest.TestCase):
 
         var = VarExpr(Variable('x', PaddleType.INT))
         expr = UnaryExpr(UnaryOperator.NEG, var)
-        
+
         expected = -Int('x')
         actual = ast_to_z3.convert(expr)
         self.assertIsInstance(actual, z3.z3.ArithRef)
         self.assertTrue(expected.eq(actual))
-    
+
     def test_ast_to_z3_unary_bool_ref(self):
         """
         Assert that AstToZ3.convert properly converts an AST UnaryExpr to z3 format BoolRef
@@ -246,12 +246,12 @@ class TestStudent(unittest.TestCase):
 
         var = VarExpr(Variable('x', PaddleType.BOOL))
         expr = UnaryExpr(UnaryOperator.NOT, var)
-        
+
         expected = Not(Bool('x'))
         actual = ast_to_z3.convert(expr)
         self.assertIsInstance(actual, z3.z3.BoolRef)
         self.assertTrue(expected.eq(actual))
-    
+
     def test_ast_to_z3_if_then_else(self):
         """
         Assert that AstToZ3.convert properly converts an AST ITE to z3 format If BoolRef
@@ -267,7 +267,7 @@ class TestStudent(unittest.TestCase):
         actual = ast_to_z3.convert(expr)
         self.assertIsInstance(actual, z3.z3.BoolRef)
         self.assertTrue(expected.eq(actual))
-    
+
     def test_ast_to_z3_constant(self):
         """
         Assert that AstToZ3.convert returns the raw value of any constants
@@ -277,7 +277,7 @@ class TestStudent(unittest.TestCase):
         self.assertTrue(ast_to_z3.convert(BoolConst(True)))
         self.assertFalse(ast_to_z3.convert(BoolConst(False)))
         self.assertEqual(ast_to_z3.convert(IntConst(5)), 5)
-    
+
     def test_ast_to_z3_exception(self):
         """
         Assert that AstToZ3.convert raises an TypeError when encountering a Grammar or unknown expression
@@ -289,7 +289,7 @@ class TestStudent(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             ast_to_z3.convert(GrammarInteger())
-            
+
         with self.assertRaises(TypeError):
             ast_to_z3.convert(Expression())
 
